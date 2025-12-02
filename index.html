@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Интерфейс системы поиска приближённого соседа (на основе Product Quantization)</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+
+  <h1>Интерфейс системы поиска приближённого соседа (на основе Product Quantization)</h1>
+
+  <div class="section">
+    <h2>Главная панель</h2>
+    <p>Краткое описание системы: что такое поиск ближайших соседей, зачем нужен <strong>Product Quantization (PQ)</strong> и какие задачи решает система.</p>
+    <p>Ссылки на:</p>
+    <ul>
+      <li><a href="#">Документацию</a></li>
+      <li><a href="#">Примеры использования</a></li>
+    </ul>
+    <button style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Начать работу</button>
+  </div>
+
+  <div class="section">
+    <h2>Поле для загрузки датасета</h2>
+    <p>Пользователь может:</p>
+    <ul>
+      <li>Загрузить собственный набор данных (векторы, изображения, тексты и т.д.)</li>
+      <li>Выбрать один из встроенных примеров (например, небольшой датасет CIFAR-10 или MNIST)</li>
+    </ul>
+    <input type="file" accept=".csv,.json,.npy" />
+    <p style="margin-top: 10px;"><em>Или выберите готовый пример:</em> 
+      <select>
+        <option>—</option>
+        <option>Пример: изображения (CIFAR-10)</option>
+        <option>Пример: текстовые эмбеддинги</option>
+        <option>Пример: синтетические векторы</option>
+      </select>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Поле для загрузки запроса</h2>
+    <p>Укажите объект, по которому нужно найти ближайших соседей:</p>
+    <ul>
+      <li>Загрузите файл (картинку, текст, вектор)</li>
+      <li>Введите номер строки из таблицы датасета</li>
+      <li>Укажите диапазон значений (для тестирования)</li>
+    </ul>
+    <input type="file" accept=".jpg,.png,.txt,.json" />
+    <p style="margin-top: 10px;">
+      <label>Или введите индекс: <input type="number" min="0" placeholder="Номер строки" style="width: 100px;" /></label>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Настройки параметров PQ</h2>
+    <p>Настройте параметры алгоритма Product Quantization:</p>
+    <ul>
+      <li><strong>m</strong> — число подпространств: <input type="number" value="8" min="1" max="64" style="width: 60px;" /></li>
+      <li><strong>k</strong> — размер кодовой книги (число центроидов): <input type="number" value="256" min="1" max="65536" style="width: 80px;" /></li>
+      <li><strong>Метрика расстояния</strong>: 
+        <select>
+          <option>L2 (Euclidean)</option>
+          <option>Cosine</option>
+          <option>Dot product</option>
+        </select>
+      </li>
+    </ul>
+    <p>
+      <button style="background: #94a3b8; color: white; border: none; padding: 6px 12px; border-radius: 4px;">Использовать предустановки</button>
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>Кнопка «Показать графики»</h2>
+    <p>После запуска эксперимента отображаются графики:</p>
+    <ul>
+      <li>Скорость работы (latency)</li>
+      <li>Точность поиска (recall@k, precision)</li>
+      <li>Использование памяти (Memory Footprint)</li>
+      <li>Этапы работы: построение индекса → кодирование → поиск</li>
+    </ul>
+    <button style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold;">Показать графики</button>
+  </div>
+
+  <div class="section">
+    <h2>Отображение ближайших соседей</h2>
+    <p>Результаты поиска после выполнения запроса:</p>
+    <ul>
+      <li>Список найденных объектов с расстояниями (например: [ID: 123, dist: 0.45])</li>
+      <li>Или визуальная сетка изображений (если загружены картинки)</li>
+    </ul>
+    <div style="background: #f1f5f9; height: 120px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+      <em>Здесь появятся результаты поиска</em>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Панель с метриками</h2>
+    <ul>
+      <li><strong>Latency:</strong> <code>12.4 мс</code></li>
+      <li><strong>Recall@10:</strong> <code>0.92</code></li>
+      <li><strong>Precision:</strong> <code>0.88</code></li>
+      <li><strong>Memory Footprint:</strong> <code>42 MB</code> (сжатие: 12×)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Панель с примером API-запроса</h2>
+    <p>Пример POST-запроса для интеграции в backend:</p>
+    <pre>POST /api/v1/search
+Content-Type: application/json
+
+{
+  "query_vector": [0.12, -0.45, 0.67, ...],
+  "dataset": "my_dataset",
+  "pq_params": {
+    "m": 8,
+    "k": 256,
+    "metric": "L2"
+  },
+  "top_k": 10
+}</pre>
+    <p>Ответ содержит найденные соседей и метрики. Поддержка Python, JavaScript, cURL.</p>
+  </div>
+
+</body>
+</html>

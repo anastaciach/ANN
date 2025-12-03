@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Интерфейс системы поиска приближённого соседа (на основе Product Quantization)</title>
+  <title>Система поиска приближённого соседа (на основе Product Quantization)</title>
+  <link rel="stylesheet" href="./style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -231,6 +232,7 @@
       border-color: var(--primary-color);
       background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 100%);
     }
+    /* Специфические стили для кнопок */
     .btn-primary {
       background: linear-gradient(135deg, var(--primary-color) 0%, #60a5fa 100%);
       color: white;
@@ -269,6 +271,7 @@
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
+    /* Стили для объединённого блока загрузки */
     .upload-section {
       display: flex;
       gap: 20px;
@@ -300,73 +303,35 @@
     .upload-item h3 i {
       color: var(--primary-color);
     }
-    .graphs-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    .graph-item {
-      background: var(--bg-white);
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: var(--shadow-sm);
-      text-align: center;
-    }
-    .graph-item canvas {
-      max-width: 100%;
-      height: 200px !important;
-    }
-    .neighbors-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-    .neighbor-item {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      border-radius: 10px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
-    .neighbor-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-    .neighbor-img {
-      width: 80px;
-      height: 80px;
-      background: #d1d5db;
-      border-radius: 8px;
-      margin: 0 auto 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #6b7280;
-      font-size: 12px;
-    }
-    .neighbor-dist {
-      font-weight: 500;
-      color: var(--primary-color);
-    }
+    /* Медиа-запрос для мобильных: вертикальный стек, отдельные блоки */
     @media (max-width: 768px) {
-      body { padding: 10px; }
-      .upload-section { flex-direction: column; }
-      h1 { font-size: 1.8em; }
-      .section { padding: 20px; }
-      .graphs-container { grid-template-columns: 1fr; }
-      .neighbors-grid { grid-template-columns: repeat(2, 1fr); }
+      body {
+        padding: 10px;
+      }
+      .upload-section {
+        flex-direction: column;
+      }
+      .upload-item {
+        margin-bottom: 15px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+      .section {
+        padding: 20px;
+      }
     }
+    /* Для десктопа: горизонтальный ряд */
     @media (min-width: 769px) {
-      .upload-section { flex-direction: row; }
+      .upload-section {
+        flex-direction: row;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1><i class="fas fa-search"></i> Интерфейс системы поиска приближённого соседа (на основе Product Quantization)</h1>
+  <h1><i class="fas fa-search"></i> Система поиска приближённого соседа (на основе Product Quantization)</h1>
 
   <div class="section">
     <h2><i class="fas fa-home"></i> Главная панель</h2>
@@ -427,8 +392,8 @@
   </div>
 
   <div class="section">
-    <h2><i class="fas fa-chart-line"></i> Результаты эксперимента</h2>
-    <p>После запуска отображаются графики:</p>
+    <h2><i class="fas fa-chart-line"></i> Кнопка «Показать графики»</h2>
+    <p>После запуска эксперимента отображаются графики:</p>
     <ul>
       <li>Скорость работы (latency)</li>
       <li>Точность поиска (recall@k, precision)</li>
@@ -436,20 +401,6 @@
       <li>Этапы работы: построение индекса → кодирование → поиск</li>
     </ul>
     <button class="btn-success"><i class="fas fa-eye"></i> Показать графики</button>
-    <div class="graphs-container">
-      <div class="graph-item">
-        <h4>Зависимость задержки от m</h4>
-        <canvas id="latencyChart" height="200"></canvas>
-      </div>
-      <div class="graph-item">
-        <h4>Зависимость полноты от k</h4>
-        <canvas id="recallChart" height="200"></canvas>
-      </div>
-      <div class="graph-item">
-        <h4>Использование памяти</h4>
-        <canvas id="memoryChart" height="200"></canvas>
-      </div>
-    </div>
   </div>
 
   <div class="section">
@@ -459,31 +410,9 @@
       <li>Список найденных объектов с расстояниями (например: [ID: 123, dist: 0.45])</li>
       <li>Или визуальная сетка изображений (если загружены картинки)</li>
     </ul>
-    <div class="neighbors-grid">
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 123</div>
-        <p class="neighbor-dist">Расстояние: 0.12</p>
-      </div>
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 456</div>
-        <p class="neighbor-dist">Расстояние: 0.23</p>
-      </div>
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 789</div>
-        <p class="neighbor-dist">Расстояние: 0.34</p>
-      </div>
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 101</div>
-        <p class="neighbor-dist">Расстояние: 0.45</p>
-      </div>
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 112</div>
-        <p class="neighbor-dist">Расстояние: 0.56</p>
-      </div>
-      <div class="neighbor-item">
-        <div class="neighbor-img">ID: 131</div>
-        <p class="neighbor-dist">Расстояние: 0.67</p>
-      </div>
+    <div class="placeholder">
+      <i class="fas fa-image" style="font-size: 2em; margin-bottom: 10px; color: var(--text-gray);"></i>
+      <em>Здесь появятся результаты поиска</em>
     </div>
   </div>
 
@@ -494,8 +423,6 @@
       <li><strong>Recall@10:</strong> <code>0.92</code></li>
       <li><strong>Precision:</strong> <code>0.88</code></li>
       <li><strong>Memory Footprint:</strong> <code>42 MB</code> (сжатие: 12×)</li>
-      <li><strong>Index Build Time:</strong> <code>2.1 с</code></li>
-      <li><strong>Query Time:</strong> <code>45 мс</code></li>
     </ul>
   </div>
 
@@ -518,83 +445,5 @@ Content-Type: application/json
     <p>Ответ содержит найденные соседей и метрики. Поддержка Python, JavaScript, cURL.</p>
   </div>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // График 1: Latency vs m
-      new Chart(document.getElementById('latencyChart').getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: [2, 4, 8, 16, 32, 64],
-          datasets: [{
-            label: 'Latency (мс)',
-            data: [45, 28, 12, 6, 5, 5],
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.3,
-            fill: true,
-            pointBackgroundColor: '#1d4ed8'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'мс' } },
-            x: { title: { display: true, text: 'm' } }
-          }
-        }
-      });
-
-      // График 2: Recall vs k
-      new Chart(document.getElementById('recallChart').getContext('2d'), {
-        type: 'line',
-        data: {
-          labels: ['16', '32', '64', '128', '256', '512'],
-          datasets: [{
-            label: 'Recall@10',
-            data: [0.52, 0.68, 0.81, 0.88, 0.92, 0.93],
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            tension: 0.3,
-            fill: true,
-            pointBackgroundColor: '#047857'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { min: 0, max: 1, title: { display: true, text: 'Recall' } },
-            x: { title: { display: true, text: 'k' } }
-          }
-        }
-      });
-
-      // График 3: Memory Footprint (bar)
-      new Chart(document.getElementById('memoryChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: ['m=8, k=256', 'm=16, k=256', 'm=8, k=512'],
-          datasets: [{
-            label: 'Память (МБ)',
-            data: [84, 42, 168],
-            backgroundColor: ['#8b5cf6', '#a78bfa', '#c4b5fd']
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, title: { display: true, text: 'МБ' } }
-          }
-        }
-      });
-    });
-  </script>
 </body>
 </html>
